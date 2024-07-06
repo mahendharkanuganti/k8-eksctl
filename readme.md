@@ -35,4 +35,11 @@ sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
 sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 echo "source /opt/kubectx/completion/kubens.bash" >> ~/.bashrc
 ```
-
+Extend the /var and /root file systems
+```
+growpart /dev/xvda 4
+lvextend -l +50%FREE /dev/RootVG/rootVol
+lvextend -l +50%FREE /dev/RootVG/varVol
+xfs_growfs /dev/RootVG/rootVol
+xfs_growfs /dev/RootVG/varVol
+```
