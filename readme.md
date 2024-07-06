@@ -1,5 +1,37 @@
 # Creating AWS EKS Cluster:
 * This repo is for creating an AWS EKS cluster with 3 nodes as its desired Capacity
+
+## Install EKSCTL on linux server using Curl:
+```
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+```
+## Extend the /var and /root file systems
+```
+growpart /dev/xvda 4
+lvextend -l +50%FREE /dev/RootVG/rootVol
+lvextend -l +50%FREE /dev/RootVG/varVol
+xfs_growfs /dev/RootVG/rootVol
+xfs_growfs /dev/RootVG/varVol
+```
+
+## Install Kubens on linux
+```
+sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
+sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+echo "source /opt/kubectx/completion/kubens.bash" >> ~/.bashrc
+```
+
+## Install Kubectl on linux
+```
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+  echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  kubectl version --client
+```
+
 * Create an EKS cluster from the config file via yaml
   ```
   eksctl create cluster -f eks.yaml
@@ -20,26 +52,4 @@ eksctl delete cluster -f eks.yaml
 ```
 $ eksctl create cluster -f eks.yaml
 ```
-* Install Kubectl on linux
-```
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-  echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-  kubectl version --client
-```
 
-* Install Kubens on linux
-```
-sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
-sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
-echo "source /opt/kubectx/completion/kubens.bash" >> ~/.bashrc
-```
-Extend the /var and /root file systems
-```
-growpart /dev/xvda 4
-lvextend -l +50%FREE /dev/RootVG/rootVol
-lvextend -l +50%FREE /dev/RootVG/varVol
-xfs_growfs /dev/RootVG/rootVol
-xfs_growfs /dev/RootVG/varVol
-```
